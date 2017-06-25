@@ -1,20 +1,23 @@
 #!/usr/bin/python
 
-""" this script is a python version
+"""
+this script is a python version
 of the original shell setup script
-for my scripts repo """
+for my scripts repo
+"""
 
 import sys
 import os
 import string
 
+global home, bindir, path_add, path
 home = os.path.expanduser('~')
 bindir = home + "/bin"
 path_add = 1
 path = os.environ['PATH']
 
 def error_trig(message):
-    print "&s\n" % message
+    print "Error:", message
     sys.exit(1)
 
 def usage():
@@ -34,12 +37,22 @@ def path_check():
         print bindir, "already exists in PATH"
 
 def get_args(arg_list):
-    bin_set = 0
-    for arg in arg_list:
+    global bindir
+    if len(arg_list) > 0:
+        if "-h" in arg_list:
+            usage()
+            sys.exit(1)
+        elif "-b" in arg_list:
+            bpos = arg_list.index("-b")
+            set_dir = arg_list[bpos + 1]
+        else:
+            error_trig("Invalid argument: " + arg_list[0] + ". Run with -h for help.")
 
+# def install(path):
 
 def main():
-    get_args(sys.argv)
+    global bindir
+    get_args(sys.argv[1:])
+    print bindir
 
 main()
-# print sys.argv
