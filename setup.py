@@ -28,6 +28,13 @@ def usage():
     print "-b /path/to/bin    Install dir. Default is", bindir
     print "-h                 Print this help."
 
+def check_dir(dir):
+    full_path = os.path.abspath(dir)
+    if os.path.isdir(full_path):
+        return 1
+    else:
+        return 0
+
 def path_check():
     if bindir not in path:
         print "adding", bindir, "to PATH..."
@@ -37,7 +44,6 @@ def path_check():
         print bindir, "already exists in PATH"
 
 def get_args(arg_list):
-    global bindir
     if len(arg_list) > 0:
         if "-h" in arg_list:
             usage()
@@ -45,8 +51,16 @@ def get_args(arg_list):
         elif "-b" in arg_list:
             bpos = arg_list.index("-b")
             set_dir = arg_list[bpos + 1]
+            if check_dir(set_dir):
+                global bindir
+                bindir = set_dir
+                path_check()
+                return 1
+            else:
+                error_trig("cannot stat '" + set_dir + "': No such file or directory")
         else:
             error_trig("Invalid argument: " + arg_list[0] + ". Run with -h for help.")
+
 
 # def install(path):
 
