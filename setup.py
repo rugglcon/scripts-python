@@ -45,10 +45,10 @@ def mkdir_p(dir):
         else:
             raise
 
-def path_check():
-    if bindir not in path:
-        if check_dir(bindir):
-            print "adding", bindir, "to PATH..."
+def path_check(set_dir):
+    if set_dir not in path:
+        if check_dir(set_dir):
+            print "adding", set_dir, "to PATH..."
             with open(home + "/.profile", "a") as profile:
                 profile.write("\nexport PATH=" + path + ":" + bindir)
         else:
@@ -57,22 +57,22 @@ def path_check():
         print bindir, "already exists in PATH"
 
 def get_args(arg_list):
+    set_dir = bindir
     if len(arg_list) > 0:
         if "-h" in arg_list:
             usage()
             sys.exit(1)
         elif "-b" in arg_list:
             bpos = arg_list.index("-b")
-            set_dir = arg_list[bpos + 1]
-            if check_dir(set_dir):
-                global bindir
-                bindir = set_dir
-                path_check()
-                return 1
+            if len(arg_list) > bpos:
+                set_dir = arg_list[bpos + 1]
             else:
-                make_dir(set_dir)
+                error_trig("no path specified after '-b' option. Run with -h for help.")
+
         else:
             error_trig("Invalid argument: " + arg_list[0] + ". Run with -h for help.")
+
+    path_check(set_dir)
 
 
 # def install(path):
