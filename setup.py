@@ -8,7 +8,7 @@ for my scripts repo
 
 import sys
 import os
-import string
+import errno
 
 global home, bindir, path_add, path
 home = os.path.expanduser('~')
@@ -35,8 +35,15 @@ def check_dir(dir):
     else:
         return 0
 
-def make_dir(dir):
+def mkdir_p(dir):
     full_path = os.path.abspath(dir)
+    try:
+        os.makedirs(full_path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(full_path):
+            pass
+        else:
+            raise
 
 def path_check():
     if bindir not in path:
