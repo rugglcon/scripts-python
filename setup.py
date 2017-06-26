@@ -37,24 +37,31 @@ def check_dir(dir):
 
 def mkdir_p(dir):
     full_path = os.path.abspath(dir)
-    try:
-        os.makedirs(full_path)
-    except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(full_path):
-            pass
+    while True:
+        feedback = raw_input(dir + " doesn't exist, create it? [Y/n] ")
+        if feedback == 'Y' or feedback == 'y':
+            try:
+                os.makedirs(full_path)
+            except OSError as exc:
+                if exc.errno == errno.EEXIST and os.path.isdir(full_path):
+                    pass
+                else:
+                    raise
+        elif feedback == 'N' or feedback == 'n':
+            error_trig("Please make destination or change it and try again.")
         else:
-            raise
+            print "Please enter Y(y) or n(N)"
 
 def path_check(set_dir):
     if set_dir not in path:
         if check_dir(set_dir):
             print "adding", set_dir, "to PATH..."
             with open(home + "/.profile", "a") as profile:
-                profile.write("\nexport PATH=" + path + ":" + bindir)
+                profile.write("\nexport PATH=" + path + ":" + set_dir)
         else:
-            make_dir(bindir)
+            mkdir_p(set_dir)
     else:
-        print bindir, "already exists in PATH"
+        print set_dir, "already exists in PATH"
 
 def get_args(arg_list):
     set_dir = bindir
