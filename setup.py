@@ -35,11 +35,17 @@ def check_dir(dir):
     else:
         return 0
 
+def make_dir(dir):
+    full_path = os.path.abspath(dir)
+
 def path_check():
     if bindir not in path:
-        print "adding", bindir, "to PATH..."
-        with open(home + "/.profile", "a") as profile:
-            profile.write("\nexport PATH=" + path + ":" + bindir)
+        if check_dir(bindir):
+            print "adding", bindir, "to PATH..."
+            with open(home + "/.profile", "a") as profile:
+                profile.write("\nexport PATH=" + path + ":" + bindir)
+        else:
+            make_dir(bindir)
     else:
         print bindir, "already exists in PATH"
 
@@ -57,7 +63,7 @@ def get_args(arg_list):
                 path_check()
                 return 1
             else:
-                error_trig("cannot stat '" + set_dir + "': No such file or directory")
+                make_dir(set_dir)
         else:
             error_trig("Invalid argument: " + arg_list[0] + ". Run with -h for help.")
 
@@ -65,7 +71,6 @@ def get_args(arg_list):
 # def install(path):
 
 def main():
-    global bindir
     get_args(sys.argv[1:])
     print bindir
 
