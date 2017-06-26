@@ -47,6 +47,8 @@ def mkdir_p(dir):
                     pass
                 else:
                     raise
+
+            return
         elif feedback == 'N' or feedback == 'n':
             error_trig("Please make destination or change it and try again.")
         else:
