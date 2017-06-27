@@ -6,10 +6,10 @@ of the original shell setup script
 for my scripts repo
 """
 
-import sys
+from sys import exit, argv
 import os
 import errno
-import subprocess
+from shutil import copy
 
 # declare useful globals
 global home
@@ -27,7 +27,7 @@ path = os.environ['PATH']
 # start functions
 def error_trig(message):
     print "Error:", message
-    sys.exit(1)
+    exit(1)
 
 def usage():
     print "Usage: ./setup.py [OPTIONS]"
@@ -72,10 +72,9 @@ def path_check(set_dir):
     if set_dir not in path:
         if mkdir_p(set_dir):
             print "adding", set_dir, "to PATH..."
-            with open(home + "/.profile", "a") as profile:
-                profile.write("\nexport PATH=" + path + ":" + set_dir)
+            with open(home + "/.profile", "a+") as profile:
+                profile.write("export PATH=\"" + path + ":" + set_dir + "\"")
     
-            subprocess.call(["./export.sh", set_dir])
         else:
             error_trig("Something went wrong while making directory.")
     else:
@@ -89,7 +88,7 @@ def get_args(arg_list):
     if len(arg_list) > 0:
         if "-h" in arg_list:
             usage()
-            sys.exit(1)
+            exit(1)
         elif "-b" in arg_list:
             bpos = arg_list.index("-b")
             if len(arg_list) > bpos:
@@ -103,11 +102,13 @@ def get_args(arg_list):
     path_check(set_dir)
 
 
-# def install(path):
+def install():
+    print "installing scripts..."
 
 def main():
-    get_args(sys.argv[1:])
+    get_args(argv[1:])
     
     # passed all the checks, go ahead and install scripts
+    install()
 
 main()
