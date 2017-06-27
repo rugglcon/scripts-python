@@ -9,6 +9,7 @@ for my scripts repo
 import sys
 import os
 import errno
+import subprocess
 
 # declare useful globals
 global home
@@ -73,8 +74,8 @@ def path_check(set_dir):
             print "adding", set_dir, "to PATH..."
             with open(home + "/.profile", "a") as profile:
                 profile.write("\nexport PATH=" + path + ":" + set_dir)
-
-            os.environ['PATH'] = set_dir
+    
+            subprocess.call(["./export.sh", set_dir])
         else:
             error_trig("Something went wrong while making directory.")
     else:
