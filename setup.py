@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """
 this script is a python version
@@ -10,12 +10,20 @@ import sys
 import os
 import errno
 
-global home, bindir, path_add, path
+# declare useful globals
+global home
 home = os.path.expanduser('~')
+
+global bindir
 bindir = home + "/bin"
+
+global path_add
 path_add = 1
+
+global path
 path = os.environ['PATH']
 
+# start functions
 def error_trig(message):
     print "Error:", message
     sys.exit(1)
@@ -37,6 +45,9 @@ def check_dir(dir):
 
 def mkdir_p(dir):
     full_path = os.path.abspath(dir)
+    if os.path.exists(full_path) and os.path.isdir(full_path):
+        return 1
+
     while True:
         feedback = raw_input(dir + " doesn't exist, create it? [Y/n] ")
         if feedback == 'Y' or feedback == 'y':
@@ -46,24 +57,29 @@ def mkdir_p(dir):
                 if exc.errno == errno.EEXIST and os.path.isdir(full_path):
                     pass
                 else:
-                    raise
+                    print "Error occurred:", exc.errno
+                    return 0
 
-            return
+            return 1
         elif feedback == 'N' or feedback == 'n':
             error_trig("Please make destination or change it and try again.")
         else:
             print "Please enter Y(y) or n(N)"
 
 def path_check(set_dir):
+    set_dir = os.path.abspath(set_dir)
     if set_dir not in path:
-        if check_dir(set_dir):
+        if mkdir_p(set_dir):
             print "adding", set_dir, "to PATH..."
             with open(home + "/.profile", "a") as profile:
                 profile.write("\nexport PATH=" + path + ":" + set_dir)
         else:
-            mkdir_p(set_dir)
+            error_trig("Something went wrong while making directory.")
     else:
         print set_dir, "already exists in PATH"
+
+    global bindir
+    bindir = set_dir
 
 def get_args(arg_list):
     set_dir = bindir
@@ -88,6 +104,7 @@ def get_args(arg_list):
 
 def main():
     get_args(sys.argv[1:])
-    print bindir
+    
+    # passed all the checks, go ahead and install scripts
 
 main()
