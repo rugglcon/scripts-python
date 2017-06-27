@@ -104,11 +104,19 @@ def get_args(arg_list):
 
 def install():
     print "installing scripts..."
+    
+    all_scripts = os.listdir("./install")
+    for script in all_scripts:
+        copy(script, bindir)
+        copystat(script, bindir)
 
 def main():
     get_args(argv[1:])
     
     # passed all the checks, go ahead and install scripts
     install()
+
+    print "done."
+    print "In order for the scripts to be readily available, you must source '$HOME/.profile' file."
 
 main()
