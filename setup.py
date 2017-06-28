@@ -74,7 +74,8 @@ def path_check(set_dir):
             print "adding", set_dir, "to PATH..."
             with open(home + "/.profile", "a+") as profile:
                 profile.write("export PATH=\"" + path + ":" + set_dir + "\"")
-    
+
+            print "In order for the scripts to be readily available, you must source '$HOME/.profile'."
         else:
             error_trig("Something went wrong while making directory.")
     else:
@@ -101,7 +102,6 @@ def get_args(arg_list):
 
     path_check(set_dir)
 
-
 def install():
     print "installing scripts..."
     
@@ -117,6 +117,5 @@ def main():
     install()
 
     print "done."
-    print "In order for the scripts to be readily available, you must source '$HOME/.profile' file."
 
 main()
