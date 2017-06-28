@@ -9,7 +9,7 @@ for my scripts repo
 from sys import exit, argv
 import os
 import errno
-from shutil import copy
+from shutil import copy, copystat
 
 # declare useful globals
 global home
@@ -106,6 +106,7 @@ def install():
     print "installing scripts..."
     
     all_scripts = os.listdir("./install")
+    os.chdir("install")
     for script in all_scripts:
         copy(script, bindir)
         copystat(script, bindir)
