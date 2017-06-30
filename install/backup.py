@@ -31,8 +31,15 @@ def usage():
     print "-e, --err_file err_file.txt   Output errors to the provided file."
     print "-v, --verbose                 Turns on verbose logging."
 
+def check_dir(dir):
+    full_path = os.path.abspath(dir)
+    if os.path.isdir(full_path) or os.path.isdir(full_path):
+        return 1
+    else:
+        return 0
+
 def get_args(arg_list):
-    check_dir = src
+    check_dir = SRC
     err_check = ERR_FILE
     if len(arg_list) > 0:
         if "-h" or "--help" in arg_list:
@@ -62,6 +69,15 @@ def get_args(arg_list):
                 err_check = arg_list[epos + 1]
             else:
                 error_trig("no filename specified after '-e' option. Run with '-h' or '--help' for help")
+        if "--err_file" in arg_list:
+            epos = arg_list.index("--err_file")
+            if len(arg_list) > epos:
+                err_check = arg_list[epos + 1]
+            else:
+                error_trig("no filename specfied after '--err_file' option. Run with '-h' or '--help' for help")
+    else:
+        # TODO
+        do_backup_wo_args()
 
 def main():
     get_args(argv[1:])
