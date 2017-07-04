@@ -9,7 +9,7 @@ for my scripts repo
 from sys import exit, argv
 import os
 import errno
-from shutil import copy, copystat
+from shutil import copy, copystat, rmtree
 
 # declare useful globals
 global home
@@ -17,6 +17,9 @@ home = os.path.expanduser('~')
 
 global bindir
 bindir = home + "/bin"
+
+global confdir
+confdir = home
 
 global path_add
 path_add = 1
@@ -102,20 +105,41 @@ def get_args(arg_list):
 
     path_check(set_dir)
 
-def install():
+def force_symlink(source, dest):
+    try:
+        os.symlink(source, dest)
+    except OSError, e:
+        if e.errno == errno.EEXIST:
+            if os.isdir(dest):
+                rmtree(dest)
+            else:
+                os.remove(dest)
+            os.symlink(source, dest)
+
+def install_scripts():
     print "installing scripts..."
     
-    all_scripts = os.listdir("./install")
-    os.chdir("install")
+    all_scripts = os.listdir("./scripts")
+    os.chdir("scripts")
     for script in all_scripts:
         copy(script, bindir)
         copystat(script, bindir)
+
+def install_configs():
+    print "linking configs..."
+    force_symlink(os.abspath(".vim"), confdir + "/.vim")
+    force_symlink(os.abspath("cava"), confdir + "/.config/cava")
+    force_symlink(os.abspath(".bash_aliases"), confdir + "/.bash_aliases")
+    force_symlink(os.abspath(".bashrc"), confdir + "/.bashrc")
+    force_symlink(os.abspath(".profile"), confdir + "/.profile")
+    force_symlink(os.abspath(".tmux.conf"), confdir + "/.tmux.conf")
+    force_symlink(os.abspath(".xinitrc"), confdir + "/.xinitrc")
 
 def main():
     get_args(argv[1:])
     
     # passed all the checks, go ahead and install scripts
-    install()
+    install_scripts()
 
     print "done."
 
