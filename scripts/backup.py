@@ -38,6 +38,10 @@ def check_dir(dir):
     else:
         return 0
 
+def do_backup_wo_args():
+    #TODO
+    print "hi"
+
 def get_args(arg_list):
     check_dir = SRC
     err_check = ERR_FILE
@@ -76,7 +80,6 @@ def get_args(arg_list):
             else:
                 error_trig("no filename specfied after '--err_file' option. Run with '-h' or '--help' for help")
     else:
-        # TODO
         do_backup_wo_args()
 
 def main():
