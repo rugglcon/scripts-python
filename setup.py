@@ -140,6 +140,7 @@ def main():
     
     # passed all the checks, go ahead and install scripts
     install_scripts()
+    install_configs()
 
     print "done."
 
