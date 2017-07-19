@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 """
 this script is a python version
@@ -30,19 +30,19 @@ def error_trig(message):
     @param message: the message to be output
     @returns: nothing
     """
-    print "Error:", message
+    print("Error:", message)
     exit(1)
 
 def usage():
     """
     prints help
     """
-    print "Usage: ./setup.py [OPTIONS]"
-    print "Examples: ./setup.py -b", BINDIR
-    print "          ./setup.py"
-    print "Options:"
-    print "-b /path/to/bin    Install dir. Default is", BINDIR
-    print "-h                 Print this help."
+    print("Usage: ./setup.py [OPTIONS]")
+    print("Examples: ./setup.py -b", BINDIR)
+    print("          ./setup.py")
+    print("Options:")
+    print("-b /path/to/bin    Install dir. Default is", BINDIR)
+    print("-h                 Print this help.")
 
 def check_dir(dir_to_check):
     """
@@ -54,8 +54,6 @@ def check_dir(dir_to_check):
     full_path = os.path.abspath(dir_to_check)
     if os.path.isdir(full_path):
         return 1
-    else:
-        return 0
 
 def mkdir_p(dir_to_check):
     """
@@ -71,7 +69,7 @@ def mkdir_p(dir_to_check):
         return 1
 
     while True:
-        feedback = raw_input(dir_to_check + " doesn't exist, create it? [Y/n] ")
+        feedback = input(dir_to_check + " doesn't exist, create it? [Y/n] ")
         if feedback == 'Y' or feedback == 'y':
             try:
                 os.makedirs(full_path)
@@ -79,14 +77,14 @@ def mkdir_p(dir_to_check):
                 if exc.errno == errno.EEXIST and os.path.isdir(full_path):
                     pass
                 else:
-                    print "Error occurred:", exc.errno
+                    print("Error occurred:", exc.errno)
                     return 0
 
             return 1
         elif feedback == 'N' or feedback == 'n':
             error_trig("Please make destination or change it and try again.")
         else:
-            print "Please enter Y(y) or n(N)"
+            print("Please enter Y(y) or n(N)")
 
 def path_check(set_dir):
     """
@@ -99,15 +97,15 @@ def path_check(set_dir):
     set_dir = os.path.abspath(set_dir)
     if set_dir not in PATH:
         if mkdir_p(set_dir):
-            print "adding", set_dir, "to PATH..."
+            print("adding", set_dir, "to PATH...")
             with open(HOME + "/.profile", "a+") as profile:
                 profile.write("export PATH=\"" + PATH + ":" + set_dir + "\"")
 
-            print "For the scripts to be readily available, you must source '$HOME/.profile'."
+            print("For the scripts to be readily available, you must source '$HOME/.profile'.")
         else:
             error_trig("Something went wrong while making directory.")
     else:
-        print set_dir, "already exists in PATH"
+        print(set_dir, "already exists in PATH")
 
     global BINDIR
     BINDIR = set_dir
@@ -120,7 +118,7 @@ def get_args(arg_list):
     @return: nothing, just prints messages if necessary
     """
     set_dir = BINDIR
-    if len(arg_list) > 0:
+    if arg_list:
         if "-h" in arg_list:
             usage()
             exit(1)
@@ -146,7 +144,7 @@ def force_symlink(source, dest):
     """
     try:
         os.symlink(source, dest)
-    except OSError, exc:
+    except OSError as exc:
         if exc.errno == errno.EEXIST:
             if os.path.isdir(dest):
                 rmtree(dest)
@@ -158,7 +156,7 @@ def install_scripts():
     """
     installs the scripts
     """
-    print "installing scripts..."
+    print("installing scripts...")
 
     all_scripts = os.listdir("./scripts")
     os.chdir("scripts")
@@ -170,7 +168,7 @@ def install_configs():
     """
     installs the config files
     """
-    print "linking configs..."
+    print("linking configs...")
     force_symlink(os.path.abspath(".vim"), CONFDIR + "/.vim")
     force_symlink(os.path.abspath("cava"), CONFDIR + "/.config/cava")
     force_symlink(os.path.abspath(".bash_aliases"), CONFDIR + "/.bash_aliases")
@@ -189,6 +187,6 @@ def main():
     install_scripts()
     install_configs()
 
-    print "done."
+    print("done.")
 
 main()
