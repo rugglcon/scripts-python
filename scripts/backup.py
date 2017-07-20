@@ -19,10 +19,16 @@ SRC = ""
 DEST = ""
 
 def error_trig(message):
+    """
+    triggers error message and exits
+    """
     print("Error:", message)
     exit(1)
 
 def usage():
+    """
+    prints usage
+    """
     print("Usage: backup.py [OPTIONS]")
     print("Examples:         backup.py -e err_file.txt -v")
     print("                  backup")
@@ -33,19 +39,71 @@ def usage():
     print("-e, --err_file err_file.txt   Output errors to the provided file.")
     print("-v, --verbose                 Turns on verbose logging.")
 
-def check_dir(dir):
-    full_path = os.path.abspath(dir)
-    if os.path.isdir(full_path) or os.path.isdir(full_path):
-        return 1
+def check_dirs():
+    """
+    checks if SRC and DEST are directorys
+    """
+    full_src = os.path.abspath(SRC)
+    full_dest = os.path.abspath(DEST)
+    if os.path.isdir(full_src) or os.path.isfile(full_src):
+        if not os.path.exists(full_dest) and os.path.isdir(full_src):
+            if not mkdir_p(full_dest):
+                error_trig("something went wrong")
     else:
-        return 0
+        error_trig("backup.py: cannot stat '" + SRC + "': No such file or \
+                directory")
+
+def mkdir_p(dir_to_check):
+    """
+    provides functionality of mkdir -p
+    """
+    full_path = os.path.abspath(dir_to_check)
+    if os.path.exists(full_path) and os.path.isdir(full_path):
+        return 1
+
+    while True:
+        feedback = input(dir_to_check + " doesn't exist, create it? [Y/n] ")
+        if feedback == 'Y' or feedback == 'y':
+            try:
+                os.makedirs(full_path)
+            except OSError as exc:
+                if exc.errno == errno.EEXIST and os.path.isdir(full_path):
+                    pass
+                else:
+                    print("Error occurred:", exc.errno)
+                    return 0
+
+            return 1
+        elif feedback == 'N' or feedback == 'n':
+            error_trig("Please make destination or change it and try again.")
+        else:
+            print("Please enter Y(y) or n(N)")
 
 def do_backup_wo_args():
+    """
+    does the backup if no arguments are provided
+    """
     #TODO
     print("hi")
 
+def do_backup_w_args():
+    """
+    does the backup if arguments are provided
+    """
+    backup()
+
+def backup():
+    """
+    does the backup
+    """
+    print("backup")
+
 def get_args(arg_list):
-    check_dir = SRC
+    """
+    gets arguments from runtime
+    """
+    check_src = SRC
+    check_dest = DEST
     err_check = ERR_FILE
     if arg_list:
         if "-h" or "--help" in arg_list:
@@ -54,16 +112,30 @@ def get_args(arg_list):
         if "-s" in arg_list:
             spos = arg_list.index("-s")
             if len(arg_list) > spos:
-                check_dir = arg_list[spos + 1]
+                check_src = arg_list[spos + 1]
             else:
                 error_trig("no path specified after '-s' option. Run with \
                         '-h' or '--help' for help")
         if "--src" in arg_list:
             spos = arg_list.index("--src")
             if len(arg_list) > spos:
-                check_dir = arg_list[spos + 1]
+                check_src = arg_list[spos + 1]
             else:
                 error_trig("no path specified after '--src' option. Run with \
+                        '-h' or '--help' for help")
+        if "-d" in arg_list:
+            dpos = arg_list.index("-d")
+            if len(arg_list) > dpos:
+                check_dest = arg_list[dpos + 1]
+            else:
+                error_trig("no path specified after '-d' option. Run with \
+                        '-h' or '--help' for help")
+        if "--dest" in arg_list:
+            dpos = arg_list.index("--dest")
+            if len(arg_list) > dpos:
+                check_dest = arg_list[dpos + 1]
+            else:
+                error_trig("no path specified after '--dest' option. Run with \
                         '-h' or '--help' for help")
         if "-v" in arg_list:
             global SYNC_OPTS
@@ -85,10 +157,23 @@ def get_args(arg_list):
             else:
                 error_trig("no filename specfied after '--err_file' option. \
                         Run with '-h' or '--help' for help")
-    else:
-        do_backup_wo_args()
+
+    check_dirs()
+
+    global ERR_FILE
+    ERR_FILE = err_check
 
 def main():
+    """
+    main function
+    """
     get_args(argv[1:])
+
+    if SRC == "" or DEST == "":
+        do_backup_wo_args()
+    else:
+        do_backup_w_args()
+
+    backup()
 
 main()

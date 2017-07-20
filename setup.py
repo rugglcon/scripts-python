@@ -54,6 +54,7 @@ def check_dir(dir_to_check):
     full_path = os.path.abspath(dir_to_check)
     if os.path.isdir(full_path):
         return 1
+    return 0
 
 def mkdir_p(dir_to_check):
     """
