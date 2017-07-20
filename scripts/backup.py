@@ -10,12 +10,16 @@ from sys import argv
 import os
 import errno
 
+global SYNC_OPTS
 SYNC_OPTS = "-urpq"
 
+global ERR_FILE
 ERR_FILE = "backup_errs.log"
 
+global SRC
 SRC = ""
 
+global DEST
 DEST = ""
 
 def error_trig(message):
@@ -102,6 +106,8 @@ def get_args(arg_list):
     """
     gets arguments from runtime
     """
+    global ERR_FILE
+    global SYNC_OPTS
     check_src = SRC
     check_dest = DEST
     err_check = ERR_FILE
@@ -138,10 +144,8 @@ def get_args(arg_list):
                 error_trig("no path specified after '--dest' option. Run with \
                         '-h' or '--help' for help")
         if "-v" in arg_list:
-            global SYNC_OPTS
             SYNC_OPTS = SYNC_OPTS.replace("q", "v")
         if "--verbose" in arg_list:
-            global SYNC_OPTS
             SYNC_OPTS = SYNC_OPTS.replace("q", "v")
         if "-e" in arg_list:
             epos = arg_list.index("-e")
@@ -160,7 +164,6 @@ def get_args(arg_list):
 
     check_dirs()
 
-    global ERR_FILE
     ERR_FILE = err_check
 
 def main():
